@@ -1,0 +1,115 @@
+package org.appel.free.pet;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.response.ValidatableResponse;
+import jakarta.ws.rs.core.MediaType;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.equalTo;
+
+@QuarkusTest
+class PetResourceTest {
+
+    public static final String BASE_PATH = "/api/v1/pet/";
+
+    @Test
+    @DisplayName("Should return pet by its Id")
+    void getPetById() {
+
+        PetRecord record = getPetRecord();
+        ValidatableResponse validatableResponse = given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(record)
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(201);
+
+        String locationHeader = validatableResponse.extract().header("Location");
+        String savedId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
+        given()
+                .when().get(BASE_PATH + savedId)
+                .then()
+                .statusCode(200)
+                .body("name", equalTo(record.name()))
+                .body("species", equalTo(record.species()))
+                .body("breed", equalTo(record.breed()))
+                .body("conditions", equalTo(record.conditions()))
+                .body("color", equalTo(record.color()))
+                .body("birthdate", equalTo(record.birthdate()))
+                .body("weight", equalTo(record.weight()));
+    }
+
+    @Test
+    @DisplayName("Should return 204 if no pet with that Id")
+    void noPetWithId() {
+        PetRecord record = getPetRecord();
+        given()
+                .when().get(BASE_PATH + UUID.randomUUID())
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("Should correctly update pet and its data")
+    void putPet() {
+        PetRecord record = getPetRecord();
+        UUID uuid = UUID.randomUUID();
+        given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(record)
+        .when()
+                .put(BASE_PATH + uuid)
+        .then()
+                .statusCode(200)
+                .header("Location",endsWith(BASE_PATH + uuid))
+                .body("name", equalTo(record.name()))
+                .body("species", equalTo(record.species()))
+                .body("breed", equalTo(record.breed()))
+                .body("conditions", equalTo(record.conditions()))
+                .body("color", equalTo(record.color()))
+                .body("birthdate", equalTo(record.birthdate()))
+                .body("weight", equalTo(record.weight()));
+    }
+
+    @Test
+    @DisplayName("Should correctly save a pet and its data")
+    void postPet()  {
+        PetRecord record = getPetRecord();
+        given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(record)
+        .when()
+                .post(BASE_PATH)
+        .then()
+                .statusCode(201)
+                .body("name", equalTo(record.name()))
+                .body("species", equalTo(record.species()))
+                .body("breed", equalTo(record.breed()))
+                .body("conditions", equalTo(record.conditions()))
+                .body("color", equalTo(record.color()))
+                .body("birthdate", equalTo(record.birthdate()))
+                .body("weight", equalTo(record.weight()));
+    }
+
+    private PetRecord getPetRecord() {
+        return new PetRecord(
+                UUID.randomUUID(), "name",
+                "species",
+                "breed",
+                "conditions",
+                LocalDate.now().toString(),
+                10.1f,
+                "color"
+        );
+    }
+}

@@ -1,8 +1,8 @@
-package org.appel.free;
+package org.appel.free.pet;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class GreetingResourceIT extends GreetingResourceTest {
+class PetResourceIT extends PetResourceTest {
     // Execute the same tests but in packaged mode.
 }
