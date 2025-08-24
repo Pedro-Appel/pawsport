@@ -1,9 +1,11 @@
 package org.appel.free.pet;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.UUID;
+
 @ApplicationScoped
-public class PetRepository implements PanacheRepository<Pet> {
+public class PetRepository implements PanacheRepositoryBase<Pet, UUID> {
 
 }

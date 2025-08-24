@@ -1,10 +1,10 @@
 package org.appel.free.pet;
 
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.transaction.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -17,8 +17,8 @@ public class PetService {
     }
 
     public PetRecord findById(UUID petId) {
-        PanacheQuery<Pet> petPanacheQuery = petRepository.find("where id = ?1", petId);
-        return petPanacheQuery.singleResultOptional()
+        Optional<Pet> petOptional = petRepository.findByIdOptional(petId);
+        return petOptional
                 .map(Pet::toRecord)
                 .orElse(null);
     }
