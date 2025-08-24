@@ -12,6 +12,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 
 @QuarkusTest
 class PetResourceTest {
@@ -50,7 +51,6 @@ class PetResourceTest {
     @Test
     @DisplayName("Should return 204 if no pet with that Id")
     void noPetWithId() {
-        PetRecord record = getPetRecord();
         given()
                 .when().get(BASE_PATH + UUID.randomUUID())
                 .then()
@@ -66,11 +66,11 @@ class PetResourceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(record)
-        .when()
+                .when()
                 .put(BASE_PATH + uuid)
-        .then()
+                .then()
                 .statusCode(200)
-                .header("Location",endsWith(BASE_PATH + uuid))
+                .header("Location", endsWith(BASE_PATH + uuid))
                 .body("name", equalTo(record.name()))
                 .body("species", equalTo(record.species()))
                 .body("breed", equalTo(record.breed()))
@@ -82,16 +82,17 @@ class PetResourceTest {
 
     @Test
     @DisplayName("Should correctly save a pet and its data")
-    void postPet()  {
+    void postPet() {
         PetRecord record = getPetRecord();
         given()
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(record)
-        .when()
+                .when()
                 .post(BASE_PATH)
-        .then()
+                .then()
                 .statusCode(201)
+                .header("Location", matchesPattern(".*/api/v1/pet/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}")) //83b50874-115f-4051-b4ab-92dce0513acb
                 .body("name", equalTo(record.name()))
                 .body("species", equalTo(record.species()))
                 .body("breed", equalTo(record.breed()))

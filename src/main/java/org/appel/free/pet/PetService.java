@@ -16,7 +16,6 @@ public class PetService {
         this.petRepository = petRepository;
     }
 
-    @Transactional
     public PetRecord findById(UUID petId) {
         PanacheQuery<Pet> petPanacheQuery = petRepository.find("where id = ?1", petId);
         return petPanacheQuery.singleResultOptional()
