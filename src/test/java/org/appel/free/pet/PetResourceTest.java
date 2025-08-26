@@ -44,7 +44,7 @@ class PetResourceTest {
                 .body("breed", equalTo(record.breed()))
                 .body("conditions", equalTo(record.conditions()))
                 .body("color", equalTo(record.color()))
-                .body("birthdate", equalTo(record.birthdate()))
+                .body("birthdate", equalTo(record.birthdate().toString()))
                 .body("weight", equalTo(record.weight()));
     }
 
@@ -76,7 +76,7 @@ class PetResourceTest {
                 .body("breed", equalTo(record.breed()))
                 .body("conditions", equalTo(record.conditions()))
                 .body("color", equalTo(record.color()))
-                .body("birthdate", equalTo(record.birthdate()))
+                .body("birthdate", equalTo(record.birthdate().toString()))
                 .body("weight", equalTo(record.weight()));
     }
 
@@ -98,17 +98,18 @@ class PetResourceTest {
                 .body("breed", equalTo(record.breed()))
                 .body("conditions", equalTo(record.conditions()))
                 .body("color", equalTo(record.color()))
-                .body("birthdate", equalTo(record.birthdate()))
+                .body("birthdate", equalTo(record.birthdate().toString()))
                 .body("weight", equalTo(record.weight()));
     }
 
     private PetRecord getPetRecord() {
         return new PetRecord(
-                UUID.randomUUID(), "name",
+                UUID.randomUUID(),
+                "name",
                 "species",
                 "breed",
                 "conditions",
-                LocalDate.now().toString(),
+                LocalDate.now().minusYears(10),
                 10.1f,
                 "color"
         );

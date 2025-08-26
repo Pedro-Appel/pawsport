@@ -1,5 +1,6 @@
 package org.appel.free.pet;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,7 +21,7 @@ public class PetResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createPet(@RequestBody PetRecord record) {
+    public Response createPet(@RequestBody @Valid PetRecord record) {
         PetRecord saved = petService.create(record);
         return Response.status(Response.Status.CREATED)
                 .location(URI.create("/api/v1/pet/" + saved.uuid()))
@@ -39,7 +40,7 @@ public class PetResource {
     @Path("/{petId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updatePet(@PathParam("petId") String petId, PetRecord petRecord) {
+    public Response updatePet(@PathParam("petId") String petId, @RequestBody @Valid PetRecord petRecord) {
         PetRecord update = petService.update(UUID.fromString(petId), petRecord);
         return Response.status(Response.Status.OK)
                 .location(URI.create("/api/v1/pet/" + update.uuid()))

@@ -3,6 +3,7 @@ package org.appel.free.pet;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -13,15 +14,15 @@ public class Pet {
     private String name;
     private String species;
     private String breed;
-    private String conditions;
-    private String birthdate;
+    private LocalDate birthdate;
     private float weight;
     private String color;
+    private String conditions;
 
     public Pet() {
     }
 
-    private Pet(UUID id, String name, String species, String breed, String conditions, String birthdate, float weight, String color) {
+    private Pet(UUID id, String name, String species, String breed, String conditions, LocalDate birthdate, float weight, String color) {
         this.id = id;
         this.name = name;
         this.species = species;

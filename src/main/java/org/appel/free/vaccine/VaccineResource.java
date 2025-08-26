@@ -1,5 +1,6 @@
 package org.appel.free.vaccine;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -19,7 +20,7 @@ public class VaccineResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createVaccine(@RequestBody VaccineRecord vaccineRecord) {
+    public Response createVaccine(@RequestBody @Valid VaccineRecord vaccineRecord) {
         VaccineRecord vaccine = vaccineService.createVaccine(vaccineRecord);
         return Response.status(Response.Status.CREATED)
                 .header("Location", URI.create("/api/v1/vaccine/" + vaccine.vaccineId()))
