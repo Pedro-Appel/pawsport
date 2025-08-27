@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.transaction.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -17,8 +16,8 @@ public class PetService {
     }
 
     public PetRecord findById(UUID petId) {
-        Optional<Pet> petOptional = petRepository.findByIdOptional(petId);
-        return petOptional
+        return petRepository.find("where id = ?1 and active = true", petId)
+                .firstResultOptional()
                 .map(Pet::toRecord)
                 .orElse(null);
     }
@@ -51,5 +50,10 @@ public class PetService {
                 record.color(),
                 key);
         return pet.toRecord();
+    }
+
+    @Transactional
+    public void delete(UUID uuid) {
+        petRepository.update("active = false where  id = ?1", uuid);
     }
 }

@@ -47,4 +47,13 @@ public class PetResource {
                 .entity(update)
                 .build();
     }
+
+    @DELETE
+    @Path("/{petId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deletePet(@PathParam("petId") String petId) {
+        petService.delete(UUID.fromString(petId));
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
 }

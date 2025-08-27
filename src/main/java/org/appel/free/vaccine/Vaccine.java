@@ -14,6 +14,7 @@ public class Vaccine extends PanacheEntity {
     private String type;
     private LocalDate date;
     private LocalDate expirationDate;
+    private boolean active;
 
     public Vaccine() {
     }
@@ -24,6 +25,7 @@ public class Vaccine extends PanacheEntity {
         this.vetId = vetId;
         this.date = date;
         this.expirationDate = expirationDate;
+        this.active = true;
     }
 
     public static Vaccine fromRecord(VaccineRecord vaccineRecord) {

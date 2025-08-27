@@ -102,6 +102,20 @@ class PetResourceTest {
                 .body("weight", equalTo(record.weight()));
     }
 
+    @Test
+    @DisplayName("Should correctly soft delete a pet")
+    void deletePet() {
+        PetRecord record = getPetRecord();
+        given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(record)
+                .when()
+                .delete(BASE_PATH + UUID.randomUUID())
+                .then()
+                .statusCode(204);
+    }
+
     private PetRecord getPetRecord() {
         return new PetRecord(
                 UUID.randomUUID(),

@@ -16,12 +16,12 @@ import static org.hamcrest.Matchers.matchesPattern;
 public class VaccineResourceTest {
 
     public static final String PET_ID = "83b50874-115f-4051-b4ab-92dce0513acb";
-
     public static final String BASE_PATH = "/api/v1/vaccine/";
 
     @Test
-    @DisplayName("Should correctly save a vaccine and its information")
-    public void saveVaccine() {
+    @DisplayName("Should correctly save, retrieve and soft delete a vaccine and its information")
+    public void deleteVaccine() {
+
         VaccineRecord vaccineRecord = getVaccineRecord();
         RestAssured
                 .given()
@@ -32,26 +32,31 @@ public class VaccineResourceTest {
                 .then()
                 .statusCode(201)
                 .header("Location", matchesPattern(".*/api/v1/vaccine/[0-9]*"))
-                .body("petId",equalTo(PET_ID))
+                .body("petId", equalTo(PET_ID))
                 .body("date", equalTo(LocalDate.now().toString()))
                 .body("type", equalTo("type"))
                 .body("expirationDate", equalTo(LocalDate.now().plusYears(4).toString()));
-    }
 
-    @Test
-    @DisplayName("Should correctly retrieve a vaccine and its complete information")
-    public void fetchVaccine() {
         RestAssured
                 .given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get(BASE_PATH+"1")
+                .get(BASE_PATH + "1")
                 .then()
                 .statusCode(200)
                 .body("petId", equalTo(PET_ID))
                 .body("date", equalTo(LocalDate.now().toString()))
                 .body("type", equalTo("type"))
                 .body("expirationDate", equalTo(LocalDate.now().plusYears(4).toString()));
+
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(BASE_PATH + "1")
+                .then()
+                .statusCode(204);
+
     }
 
     private static VaccineRecord getVaccineRecord() {

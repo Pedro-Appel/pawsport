@@ -37,4 +37,13 @@ public class VaccineResource {
                 .entity(vaccine)
                 .build();
     }
+
+    @DELETE
+    @Path("/{vaccineId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteVaccine(@PathParam("vaccineId") long id) {
+        vaccineService.delete(id);
+        return Response.status(Response.Status.NO_CONTENT)
+                .build();
+    }
 }

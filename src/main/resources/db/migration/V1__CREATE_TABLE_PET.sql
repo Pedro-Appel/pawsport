@@ -1,7 +1,8 @@
 create table Pet
 (
-    id         uuid not null,
+    id         uuid   not null,
     birthdate  date,
+    active     bool,
     breed      varchar(36),
     color      varchar(36),
     conditions varchar(255),

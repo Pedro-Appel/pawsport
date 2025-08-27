@@ -18,6 +18,7 @@ public class Pet {
     private float weight;
     private String color;
     private String conditions;
+    private boolean active;
 
     public Pet() {
     }
@@ -31,6 +32,7 @@ public class Pet {
         this.birthdate = birthdate;
         this.weight = weight;
         this.color = color;
+        active = true;
     }
 
     public UUID getId() {

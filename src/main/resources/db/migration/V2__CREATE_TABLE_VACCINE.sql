@@ -6,6 +6,7 @@ create table Vaccine
     id             bigint not null,
     date           date,
     expirationDate date,
+    active         bool,
     petId          varchar(36),
     type           varchar(36),
     vetId          varchar(36),
