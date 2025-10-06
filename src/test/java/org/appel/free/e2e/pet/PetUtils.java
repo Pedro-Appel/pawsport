@@ -1,5 +1,6 @@
-package org.appel.free.pet;
+package org.appel.free.e2e.pet;
 
+import org.appel.free.pet.PetRecord;
 import org.appel.free.pet.treatment.TreatmentRecord;
 
 import java.time.LocalDate;

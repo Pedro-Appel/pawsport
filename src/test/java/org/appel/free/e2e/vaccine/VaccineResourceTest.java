@@ -1,4 +1,4 @@
-package org.appel.free.vaccine;
+package org.appel.free.e2e.vaccine;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -6,6 +6,9 @@ import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.appel.free.vaccine.Vaccine;
+import org.appel.free.vaccine.VaccineRecord;
+import org.appel.free.vaccine.VaccineRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package org.appel.free.pet;
+package org.appel.free.e2e.pet;
 
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -8,6 +8,8 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
+import org.appel.free.pet.Pet;
+import org.appel.free.pet.PetRepository;
 import org.appel.free.pet.treatment.Treatment;
 import org.appel.free.pet.treatment.TreatmentRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.appel.free.pet.PetUtils.*;
+import static org.appel.free.e2e.pet.PetUtils.*;
 
 @QuarkusTest
 class PetResourceTreatmentTest {

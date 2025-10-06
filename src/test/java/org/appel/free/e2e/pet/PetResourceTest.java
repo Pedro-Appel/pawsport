@@ -1,10 +1,13 @@
-package org.appel.free.pet;
+package org.appel.free.e2e.pet;
 
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
+import org.appel.free.pet.Pet;
+import org.appel.free.pet.PetRecord;
+import org.appel.free.pet.PetRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.appel.free.pet.PetUtils.getPetId;
-import static org.appel.free.pet.PetUtils.getPetRecord;
+import static org.appel.free.e2e.pet.PetUtils.getPetId;
+import static org.appel.free.e2e.pet.PetUtils.getPetRecord;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
