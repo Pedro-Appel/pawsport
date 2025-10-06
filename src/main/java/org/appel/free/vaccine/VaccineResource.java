@@ -31,7 +31,7 @@ public class VaccineResource {
     @GET
     @Path("/{vaccineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createVaccine(@PathParam("vaccineId") long id) {
+    public Response fetchVaccine(@PathParam("vaccineId") long id) {
         VaccineRecord vaccine = vaccineService.retrieve(id);
         return Response.status(Response.Status.OK)
                 .entity(vaccine)
