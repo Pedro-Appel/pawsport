@@ -9,24 +9,33 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-hibernate-validator'
+    //CORE
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-smallrye-health'
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-container-image-docker'
+    implementation 'io.quarkus:quarkus-smallrye-context-propagation'
+
+    //DEPENDENCIES
     implementation 'io.quarkus:quarkus-rest'
     implementation 'io.quarkus:quarkus-flyway'
-    implementation 'io.quarkus:quarkus-container-image-docker'
-    implementation 'io.quarkus:quarkus-smallrye-openapi'
-    implementation 'io.quarkus:quarkus-rest-jackson'
-    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
-    implementation 'io.quarkus:quarkus-smallrye-health'
-    implementation 'io.quarkus:quarkus-smallrye-context-propagation'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+//    implementation 'io.quarkus:quarkus-rest-jackson'
+//    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+//    implementation 'io.quarkus:quarkus-hibernate-orm'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
-    implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-hibernate-orm'
+
+    //REACTIVE
+    implementation 'io.quarkus:quarkus-rest-jackson:3.29.0'
+    implementation 'io.quarkus:quarkus-hibernate-reactive-panache:3.29.0'
+    implementation 'io.quarkus:quarkus-reactive-pg-client:3.29.0'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.quarkus:quarkus-junit5-mockito'
     testImplementation 'io.quarkus:quarkus-panache-mock'
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation "io.quarkus:quarkus-jdbc-h2"
+
 }
 
 group = 'org.appel.free'

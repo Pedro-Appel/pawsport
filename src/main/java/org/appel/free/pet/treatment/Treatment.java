@@ -1,5 +1,6 @@
 package org.appel.free.pet.treatment;
 
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -9,11 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-public class Treatment {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Treatment extends PanacheEntity {
 
     String type;
 
