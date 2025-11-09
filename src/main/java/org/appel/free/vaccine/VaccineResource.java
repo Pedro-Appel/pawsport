@@ -1,12 +1,11 @@
 package org.appel.free.vaccine;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-
-import java.net.URI;
 
 @Path("/api/v1/vaccine/")
 public class VaccineResource {
@@ -21,29 +20,23 @@ public class VaccineResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createVaccine(@RequestBody @Valid VaccineRecord vaccineRecord) {
-        VaccineRecord vaccine = vaccineService.createVaccine(vaccineRecord);
         return Response.status(Response.Status.CREATED)
-                .header("Location", URI.create("/api/v1/vaccine/" + vaccine.vaccineId()))
-                .entity(vaccine)
+                .entity(vaccineService.createVaccine(vaccineRecord))
                 .build();
     }
 
     @GET
     @Path("/{vaccineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchVaccine(@PathParam("vaccineId") long id) {
-        VaccineRecord vaccine = vaccineService.retrieve(id);
-        return Response.status(Response.Status.OK)
-                .entity(vaccine)
-                .build();
+    public Uni<Response> fetchVaccine(@PathParam("vaccineId") long id) {
+        return vaccineService.retrieve(id)
+                .onItem().transform(v -> Response.ok(v).build());
     }
 
     @DELETE
     @Path("/{vaccineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteVaccine(@PathParam("vaccineId") long id) {
-        vaccineService.delete(id);
-        return Response.status(Response.Status.NO_CONTENT)
-                .build();
+    public Uni<Response> deleteVaccine(@PathParam("vaccineId") long id) {
+        return vaccineService.delete(id);
     }
 }

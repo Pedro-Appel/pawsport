@@ -29,6 +29,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest-jackson:3.29.0'
     implementation 'io.quarkus:quarkus-hibernate-reactive-panache:3.29.0'
     implementation 'io.quarkus:quarkus-reactive-pg-client:3.29.0'
+    implementation 'io.quarkus:quarkus-rest-jsonb:3.29.0'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.quarkus:quarkus-junit5-mockito'

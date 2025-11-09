@@ -1,8 +1,13 @@
 package org.appel.free.vaccine;
 
 import io.quarkus.logging.Log;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
+
+import static org.jboss.resteasy.reactive.RestResponse.Status.NOT_FOUND;
+import static org.jboss.resteasy.reactive.RestResponse.Status.NO_CONTENT;
 
 @ApplicationScoped
 public class VaccineService {
@@ -14,23 +19,26 @@ public class VaccineService {
     }
 
     @Transactional
-    public VaccineRecord createVaccine(VaccineRecord vaccineRecord) {
+    public Uni<VaccineRecord> createVaccine(VaccineRecord vaccineRecord) {
         Vaccine entity = Vaccine.fromRecord(vaccineRecord);
-        repository.persist(entity);
+        Uni<Vaccine> persist = repository.persist(entity);
         Log.infof("Registered vaccine with id: %s, for pet with id: %s", entity.id, vaccineRecord.petId());
-        return entity.toRecord();
+        return persist.map(Vaccine::toRecord);
     }
 
-    public VaccineRecord retrieve(long id) {
+    public Uni<VaccineRecord> retrieve(long id) {
         return repository.find("where id = ?1 and active = true", id)
-                .firstResultOptional()
-                .map(Vaccine::toRecord)
-                .orElse(null);
+                .singleResult()
+                .onItem().ifNotNull().transform(Vaccine::toRecord)
+                .onItem().ifNull().fail();
     }
 
     @Transactional
-    public void delete(long id) {
+    public Uni<Response> delete(long id) {
         Log.infof("Deleting Vaccine with id: %s", id);
-        repository.update("active = false where id = ?1", id);
+        return repository.update("active = false where id = ?1", id)
+                .map(deleted -> deleted > 0
+                        ? Response.status(NO_CONTENT).build()
+                        : Response.status(NOT_FOUND).build());
     }
 }

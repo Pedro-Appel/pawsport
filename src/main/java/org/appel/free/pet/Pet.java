@@ -1,5 +1,6 @@
 package org.appel.free.pet;
 
+import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -7,7 +8,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-public class Pet {
+public class Pet extends PanacheEntityBase {
 
     @Id
     private UUID id;

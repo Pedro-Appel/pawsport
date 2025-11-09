@@ -26,8 +26,8 @@ public class PetResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public RestResponse<Uni<PetRecord>> createPet(@RequestBody @Valid PetRecord record) {
-        return RestResponse.status(Response.Status.CREATED, service.create(record));
+    public Uni<Response> createPet(@RequestBody @Valid PetRecord record) {
+        return service.create(record);
     }
 
     @GET
@@ -60,7 +60,7 @@ public class PetResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> createTreatment(@PathParam("petId") UUID petId, @RequestBody @Valid TreatmentRecord record) {
         return service.addTreatment(petId, record)
-                .map(e -> RestResponse.created(URI.create("/api/v1/pet/" + e.id())).toResponse());
+                .map(e -> Response.created(URI.create("/api/v1/pet/" + e.id())).build());
     }
 
     @GET
