@@ -8,7 +8,6 @@ import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -22,7 +21,9 @@ import org.appel.free.pet.treatment.TreatmentRepository;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
+import static org.appel.free.shared.Constants.PETS_API_PATH;
 import static org.jboss.resteasy.reactive.RestResponse.Status.*;
 
 @ApplicationScoped
@@ -51,7 +52,7 @@ public class PetService {
     public Uni<Response> create(PetRecord record) {
         Pet pet = Pet.fromRecord(record);
         return Panache.withTransaction(pet::persist)
-                .replaceWith(Response.created(URI.create("/api/v1/pet/" + pet.toRecord().uuid())).build())
+                .replaceWith(Response.created(URI.create(PETS_API_PATH + pet.toRecord().uuid())).build())
                 .onFailure()
                     .recoverWithUni(f -> {
                         Log.errorf("Fail persisting pet with exception '%s'", f.getMessage());
@@ -85,13 +86,7 @@ public class PetService {
                             ? Response.ok(pet.toRecord()).build()
                             : Response.notModified().build()))
                 .onFailure()
-                    .recoverWithUni(f -> {
-                        Log.errorf("Fail updating pet with exception '%s'", f.getMessage());
-                        return switch (f){
-                            case NoResultException e -> Uni.createFrom().item(Response.status(NOT_FOUND).entity(new ExceptionResponse("Pet not found")).build());
-                            default -> Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f)).build());
-                        };
-                    });
+                    .recoverWithUni(treatMissingPet());
     }
 
     public Uni<Response> delete(UUID uuid) {
@@ -101,12 +96,27 @@ public class PetService {
                         : Response.ok().status(NOT_FOUND).build());
     }
 
-    public Uni<TreatmentRecord> addTreatment(UUID petId, @Valid TreatmentRecord record) {
+    public Uni<Response> addTreatment(UUID petId, @Valid TreatmentRecord record) {
         Treatment treatment = Treatment.fromRecord(record);
-        return Panache.withTransaction(() -> Pet.find("where id = ?1 and active = true", petId).count())
-                .onItem().ifNull().failWith(() -> new EntityNotFoundException("Pet not found"))
-                .onItem().ifNotNull().transformToUni((_) -> treatmentRepository.persist(treatment))
-                .map(Treatment::toRecord);
+        return Panache.withTransaction(() -> Pet.find("where id = ?1 and active = true", petId).singleResult())
+                .onItem()
+                    .ifNotNull()
+                    .transformToUni(_ -> Panache.withTransaction(treatment::persist))
+                .replaceWith(Response.created(URI.create(PETS_API_PATH + "/%s".formatted(petId) + "/%d".formatted(treatment.toRecord().id()))).build())
+                .onFailure()
+                    .recoverWithUni(treatMissingPet());
+    }
+
+    private static Function<Throwable, Uni<? extends Response>> treatMissingPet() {
+        return f -> {
+            Log.errorf("Fail updating pet with exception '%s'", f.getMessage());
+            return switch (f) {
+                case NoResultException _ ->
+                        Uni.createFrom().item(Response.status(NOT_FOUND).entity(new ExceptionResponse("Pet not found")).build());
+                default ->
+                        Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f)).build());
+            };
+        };
     }
 
     public Uni<List<TreatmentRecord>> listPetTreatments(UUID petId, int limit, int page) {

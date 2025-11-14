@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-@Path("/api/v1/vaccine/")
+@Path("/api/v1/vaccines/")
 public class VaccineResource {
 
     private final VaccineService vaccineService;

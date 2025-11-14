@@ -9,12 +9,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.appel.free.pet.treatment.TreatmentRecord;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.jboss.resteasy.reactive.RestResponse;
 
-import java.net.URI;
 import java.util.UUID;
 
-@Path("/api/v1/pet")
+import static org.appel.free.shared.Constants.PETS_API_PATH;
+
+@Path(PETS_API_PATH)
 public class PetResource {
 
     private final PetService service;
@@ -55,18 +55,19 @@ public class PetResource {
     }
 
     @POST
-    @Path("/{petId}/treatment")
+    @Path("/{petId}/treatments")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> createTreatment(@PathParam("petId") UUID petId, @RequestBody @Valid TreatmentRecord record) {
-        return service.addTreatment(petId, record)
-                .map(e -> Response.created(URI.create("/api/v1/pet/" + e.id())).build());
+        return service.addTreatment(petId, record);
     }
 
     @GET
-    @Path("/{petId}/treatment")
+    @Path("/{petId}/treatments")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> listPetTreatments(@PathParam("petId") UUID petId, @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit, @DefaultValue("0") @Min(0) @QueryParam("_offset") int offset) {
+    public Uni<Response> listPetTreatments(@PathParam("petId") UUID petId,
+                                           @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit,
+                                           @DefaultValue("0") @Min(0) @QueryParam("_offset") int offset) {
         return service.listPetTreatments(petId, limit, offset)
                 .map(resp -> Response.status(Response.Status.OK).entity(resp).build());
     }
@@ -79,7 +80,7 @@ public class PetResource {
      */
 
     @GET
-    @Path("/{petId}/treatment/{treatmentId}")
+    @Path("/{petId}/treatments/{treatmentId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> getTreatmentDetail(@PathParam("petId") UUID petId, @PathParam("treatmentId") Long treatmentId) {
         return service.findTreatmentDetails(treatmentId)
@@ -88,7 +89,7 @@ public class PetResource {
     }
 
     @DELETE
-    @Path("/{petId}/treatment/{treatmentId}")
+    @Path("/{petId}/treatments/{treatmentId}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> deleteTreatment(@PathParam("petId") UUID petId, @PathParam("treatmentId") long treatmentId) {
         return service.deleteTreatment(treatmentId);
