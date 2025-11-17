@@ -42,8 +42,7 @@ public class PetResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> updatePet(@PathParam("petId") String petId, @RequestBody @Valid PetRecord petRecord) {
-        return service.update(UUID.fromString(petId), petRecord)
-                .onItem().transform(record -> Response.ok(record).build());
+        return service.update(UUID.fromString(petId), petRecord);
     }
 
     @DELETE
@@ -66,26 +65,16 @@ public class PetResource {
     @Path("/{petId}/treatments")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> listPetTreatments(@PathParam("petId") UUID petId,
-                                           @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit,
-                                           @DefaultValue("0") @Min(0) @QueryParam("_offset") int offset) {
-        return service.listPetTreatments(petId, limit, offset)
-                .map(resp -> Response.status(Response.Status.OK).entity(resp).build());
+                                           @QueryParam("_limit") @DefaultValue("10") @Min(1) @Max(50) int limit,
+                                           @QueryParam("_offset") @DefaultValue("0") @Min(0) int offset) {
+        return service.listPetTreatments(petId, limit, offset);
     }
-    /*
-    } catch (EntityNotFoundException e) {
-        return Response.status(Response.Status.NOT_FOUND);
-    } catch (NotFoundException e) {
-        return Response.status(Response.Status.NO_CONTENT);
-    }
-     */
 
     @GET
     @Path("/{petId}/treatments/{treatmentId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> getTreatmentDetail(@PathParam("petId") UUID petId, @PathParam("treatmentId") Long treatmentId) {
-        return service.findTreatmentDetails(treatmentId)
-                .onItem().ifNotNull().transform((treatmentRecord) -> Response.ok(treatmentRecord).build())
-                .onItem().ifNull().continueWith(Response.status(Response.Status.NOT_FOUND).build());
+    public Uni<Response> getTreatmentDetail(@PathParam("petId") UUID petId, @PathParam("treatmentId") long treatmentId) {
+        return service.findTreatmentDetails(treatmentId);
     }
 
     @DELETE

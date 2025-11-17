@@ -1,5 +1,6 @@
 package org.appel.free.e2e.pet;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -9,12 +10,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MediaType;
 import org.appel.free.pet.Pet;
-import org.appel.free.pet.PetRepository;
 import org.appel.free.pet.treatment.Treatment;
-import org.appel.free.pet.treatment.TreatmentRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -28,33 +26,22 @@ class PetResourceTreatmentTest {
     public static final String TREATMENT_PATH = "/treatment";
 
     @Inject
-    TreatmentRepository treatmentRepository;
-    @Inject
-    PetRepository petRepository;
-    @Inject
     EntityManager entityManager;
 
-    @BeforeEach
-    @Transactional
-    void setUp() {
-        Pet entity = Pet.fromRecord(getPetId(), getPetRecord());
-        Treatment treatment = Treatment.fromRecord(getTreatmentRecord());
-        petRepository.persist(entity);
-        treatmentRepository.persist(treatment);
-    }
-
-    @AfterEach
-    @Transactional
-    void tearDown() {
-        petRepository.deleteAll();
-        treatmentRepository.deleteAll();
-        entityManager.createNativeQuery("ALTER SEQUENCE treatment_seq RESTART WITH 1").executeUpdate();
-    }
 
     @Test
     @TestTransaction
+    @Order(1)
     @DisplayName("Correctly add pet treatment")
     void test() {
+        Panache.withTransaction(Pet::deleteAll).await().indefinitely();
+        Panache.withTransaction(Treatment::deleteAll).await().indefinitely();
+
+        Pet entity = Pet.fromRecord(getPetId(), getPetRecord());
+        Treatment treatment = Treatment.fromRecord(getTreatmentRecord());
+        Panache.withTransaction(entity::persist).await().indefinitely();
+        Panache.withTransaction(treatment::persist).await().indefinitely();
+        entityManager.createNativeQuery("ALTER SEQUENCE treatment_seq RESTART WITH 1").executeUpdate();
 
         RestAssured
                 .given()
@@ -67,6 +54,7 @@ class PetResourceTreatmentTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Correctly throw 404 when creating a treatment to a non existing pet")
     void test6() {
         RestAssured
@@ -80,11 +68,10 @@ class PetResourceTreatmentTest {
     }
 
     @Test
+    @Order(2)
     @Transactional
     @DisplayName("Correctly fetch all pet treatments")
     void test2() {
-        Treatment treatment = Treatment.fromRecord(getTreatmentRecord());
-        treatmentRepository.persist(treatment);
         RestAssured
                 .given()
                 .contentType(ContentType.JSON)
@@ -95,6 +82,7 @@ class PetResourceTreatmentTest {
 
 
     @Test
+    @Order(2)
     @DisplayName("No existing pet treatments")
     void test3() {
         RestAssured
@@ -105,19 +93,19 @@ class PetResourceTreatmentTest {
     }
 
     @Test
+    @Order(3)
     @Transactional
     @DisplayName("Correctly fetch treatment details")
     void test4() {
-
-        Treatment first = treatmentRepository.findAll().list().getFirst();
         RestAssured
                 .given()
-                .get(BASE_PATH + "/" + getPetId() + TREATMENT_PATH + "/" + first.toRecord().id())
+                .get(BASE_PATH + "/" + getPetId() + TREATMENT_PATH + "/" + 1)
                 .then()
                 .statusCode(200);
     }
 
     @Test
+    @Order(3)
     @DisplayName("Pet treatments not found")
     void test5() {
         RestAssured
