@@ -1,6 +1,8 @@
 package org.appel.free.pet;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
+import io.quarkus.panache.common.Parameters;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -19,7 +21,7 @@ public class Pet extends PanacheEntityBase {
     private float weight;
     private String color;
     private String conditions;
-    private boolean active;
+    boolean active;
 
     public Pet() {
     }
@@ -34,10 +36,6 @@ public class Pet extends PanacheEntityBase {
         this.weight = weight;
         this.color = color;
         active = true;
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     private void setId(UUID id) {
@@ -65,5 +63,20 @@ public class Pet extends PanacheEntityBase {
 
     public PetRecord toRecord() {
         return new PetRecord(this.id, this.name, this.species, this.breed, this.conditions, this.birthdate, this.weight, this.color);
+    }
+
+    static Uni<Pet> findActiveById(UUID id){
+        Parameters parameters = Parameters
+                .with("id", id)
+                .and("active", true);
+        return find("id = :id and active = :active", parameters).firstResult();
+    }
+
+    @Override
+    public String toString() {
+        return "Pet{" +
+                "id=" + id +
+                ", active=" + active +
+                '}';
     }
 }

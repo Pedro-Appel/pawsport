@@ -33,7 +33,7 @@ public class PetResource {
     @GET
     @Path("/{petId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<PetRecord> getPetInformation(@PathParam("petId") String petId) {
+    public Uni<Response> getPetInformation(@PathParam("petId") String petId) {
         return service.findById(UUID.fromString(petId));
     }
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.appel.free.ErrorMessages.*;
+import static org.appel.free.shared.ErrorMessages.*;
 
 public record PetRecord(
 

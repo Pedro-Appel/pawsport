@@ -19,10 +19,8 @@ public class VaccineResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createVaccine(@RequestBody @Valid VaccineRecord vaccineRecord) {
-        return Response.status(Response.Status.CREATED)
-                .entity(vaccineService.createVaccine(vaccineRecord))
-                .build();
+    public Uni<Response> createVaccine(@RequestBody @Valid VaccineRecord vaccineRecord) {
+        return vaccineService.createVaccine(vaccineRecord);
     }
 
     @GET

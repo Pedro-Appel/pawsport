@@ -1,42 +1,40 @@
 package org.appel.free.vaccine;
 
-import io.quarkus.logging.Log;
+import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
-import static org.jboss.resteasy.reactive.RestResponse.Status.NOT_FOUND;
-import static org.jboss.resteasy.reactive.RestResponse.Status.NO_CONTENT;
+import java.net.URI;
+
+import static org.jboss.resteasy.reactive.RestResponse.Status.*;
 
 @ApplicationScoped
 public class VaccineService {
 
-    private final VaccineRepository repository;
-
-    public VaccineService(VaccineRepository repository) {
-        this.repository = repository;
-    }
-
-    @Transactional
-    public Uni<VaccineRecord> createVaccine(VaccineRecord vaccineRecord) {
+    public Uni<Response> createVaccine(VaccineRecord vaccineRecord) {
         Vaccine entity = Vaccine.fromRecord(vaccineRecord);
-        Uni<Vaccine> persist = repository.persist(entity);
-        Log.infof("Registered vaccine with id: %s, for pet with id: %s", entity.id, vaccineRecord.petId());
-        return persist.map(Vaccine::toRecord);
+        return Panache.withTransaction(entity::persist)
+                .log("Registering vaccine with id: %s, for pet with id: %s".formatted(entity.id, vaccineRecord.petId()))
+                .onFailure()
+                    .recoverWithNull().replaceWith(Response.status(INTERNAL_SERVER_ERROR).build())
+                .onItem()
+                    .transform(_ -> Response.created(URI.create(String.valueOf(entity.id))).build());
     }
 
+    @WithSession
     public Uni<VaccineRecord> retrieve(long id) {
-        return repository.find("where id = ?1 and active = true", id)
-                .singleResult()
-                .onItem().ifNotNull().transform(Vaccine::toRecord)
-                .onItem().ifNull().fail();
+        return Vaccine.findActiveById(id)
+                .onItem()
+                .transform(Vaccine::toRecord);
     }
 
-    @Transactional
+    @WithTransaction
     public Uni<Response> delete(long id) {
-        Log.infof("Deleting Vaccine with id: %s", id);
-        return repository.update("active = false where id = ?1", id)
+        return Vaccine.update("active = false where id = ?1", id)
+                .log("Deleting Vaccine with id: %s".formatted(id))
                 .map(deleted -> deleted > 0
                         ? Response.status(NO_CONTENT).build()
                         : Response.status(NOT_FOUND).build());

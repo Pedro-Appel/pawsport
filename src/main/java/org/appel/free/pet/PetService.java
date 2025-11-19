@@ -1,45 +1,43 @@
 package org.appel.free.pet;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
-import org.appel.free.exception.ExceptionResponse;
 import org.appel.free.pet.treatment.Treatment;
 import org.appel.free.pet.treatment.TreatmentRecord;
+import org.appel.free.shared.exception.ExceptionResponse;
 
 import java.net.URI;
 import java.util.UUID;
 import java.util.function.Function;
 
 import static org.appel.free.shared.Constants.PETS_API_PATH;
-import static org.jboss.resteasy.reactive.RestResponse.StatusCode.INTERNAL_SERVER_ERROR;
-import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NOT_FOUND;
-import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NO_CONTENT;
+import static org.jboss.resteasy.reactive.RestResponse.StatusCode.*;
 
 @ApplicationScoped
 public class PetService {
 
-    private final PetRepository petRepository;
-
-    public PetService(@Default PetRepository petRepository) {
-        this.petRepository = petRepository;
-    }
-
-    public Uni<PetRecord> findById(UUID petId) {
-        return Panache.withTransaction(() -> petRepository.find("where id = ?1 and active = true", petId).singleResult())
+    @WithSession
+    public Uni<Response> findById(UUID petId) {
+        return Pet.findActiveById(petId)
                 .log("Looking for pet with id: [ %s ]".formatted(petId))
                 .onItem()
-                    .transform(Pet::toRecord)
-                    .invoke(p -> Log.debugf("Retrieved pet %s", p.uuid()))
+                    .ifNull()
+                        .failWith(NotFoundException::new)
+                .onItem()
+                    .ifNotNull()
+                        .transform(p -> Response.ok().entity(p.toRecord()).build())
                 .onFailure()
                     .recoverWithUni(e -> {
                         Log.errorf("Fail searching for '%s', with exception '%s'", petId, e.getMessage());
-                        return Uni.createFrom().nullItem();
+                        return Uni.createFrom().item(Response.status(NOT_FOUND).build());
                     });
     }
 
@@ -51,7 +49,7 @@ public class PetService {
                 .onFailure()
                     .recoverWithUni(f -> {
                         Log.errorf("Fail persisting pet with exception '%s'", f.getMessage());
-                        return Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f)).build());
+                        return Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f.getMessage())).build());
                     });
     }
 
@@ -93,16 +91,19 @@ public class PetService {
                         : Response.ok().status(NOT_FOUND).build());
     }
 
+    @WithTransaction
     public Uni<Response> addTreatment(UUID petId, @Valid TreatmentRecord record) {
         Treatment treatment = Treatment.fromRecord(record);
-        return Panache.withTransaction(() -> Pet.find("where id = ?1 and active = true", petId).singleResult())
-                .log("Saving treatment to pet with id: [ %s ]".formatted(petId))
+        return Pet.findActiveById(petId)
+                .log("Looking for pet with id: [ %s ]".formatted(petId))
                 .onItem()
-                    .ifNotNull()
-                    .transformToUni(_ -> Panache.withTransaction(treatment::persist))
-                .replaceWith(Response.created(URI.create(PETS_API_PATH + "/%s".formatted(petId) + "/%d".formatted(treatment.toRecord().id()))).build())
-                .onFailure()
-                    .recoverWithUni(treatMissingPet());
+                .transformToUni(_ ->
+                        Panache.withTransaction(treatment::persist).log("Saving treatment to pet with id: [ %s ]".formatted(petId))
+                                .onItem().castTo(Treatment.class)
+                                .onItem().transform(Treatment::toRecord))
+                .onItem()
+                    .transform(t -> Response.created(URI.create(PETS_API_PATH + "%s".formatted(petId) +"/%s".formatted(t.id()))).build());
+
     }
 
     private static Function<Throwable, Uni<? extends Response>> treatMissingPet() {
@@ -112,7 +113,7 @@ public class PetService {
                 case NoResultException _ ->
                         Uni.createFrom().item(Response.status(NOT_FOUND).entity(new ExceptionResponse("Pet not found")).build());
                 default ->
-                        Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f)).build());
+                        Uni.createFrom().item(Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionResponse(f.getMessage())).build());
             };
         };
     }

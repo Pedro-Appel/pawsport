@@ -1,4 +1,4 @@
-package org.appel.free;
+package org.appel.free.shared;
 
 public class ErrorMessages {
 

@@ -1,6 +1,8 @@
 package org.appel.free.vaccine;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntity;
+import io.quarkus.panache.common.Parameters;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
@@ -14,7 +16,7 @@ public class Vaccine extends PanacheEntity {
     private String type;
     private LocalDate date;
     private LocalDate expirationDate;
-    private boolean active;
+    boolean active;
 
     public Vaccine() {
     }
@@ -26,6 +28,13 @@ public class Vaccine extends PanacheEntity {
         this.date = date;
         this.expirationDate = expirationDate;
         this.active = true;
+    }
+
+    static Uni<Vaccine> findActiveById(long id) {
+        Parameters parameters = Parameters
+                .with("vaccineId", id)
+                .and("active", true);
+        return find("vaccineId = :vaccineId and active = :active", parameters).firstResult();
     }
 
     public static Vaccine fromRecord(VaccineRecord vaccineRecord) {
