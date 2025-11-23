@@ -6,7 +6,6 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Entity;
-import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +41,7 @@ public class Treatment extends PanacheEntity {
                 .list();
     }
 
-    public static Treatment fromRecord(@Valid TreatmentRecord record) {
+    public static Treatment fromRecord(TreatmentRecord record) {
         return new Treatment(
                 record.type(),
                 record.startDate(),

@@ -5,6 +5,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URI;
@@ -25,16 +26,20 @@ public class VaccineService {
     }
 
     @WithSession
-    public Uni<VaccineRecord> retrieve(long id) {
+    public Uni<Response> retrieve(long id) {
         return Vaccine.findActiveById(id)
                 .onItem()
-                .transform(Vaccine::toRecord);
+                    .ifNull().failWith(NotFoundException::new)
+                .onItem()
+                    .ifNotNull().transform(Vaccine::toRecord)
+                .onItem()
+                    .ifNotNull().transform(v -> Response.ok(v).build());
     }
 
     @WithTransaction
     public Uni<Response> delete(long id) {
         return Vaccine.update("active = false where id = ?1", id)
-                .log("Deleting Vaccine with id: %s".formatted(id))
+                .log("Deleting Vaccine with id: %d".formatted(id))
                 .map(deleted -> deleted > 0
                         ? Response.status(NO_CONTENT).build()
                         : Response.status(NOT_FOUND).build());

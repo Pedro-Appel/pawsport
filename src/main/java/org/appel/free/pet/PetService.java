@@ -98,7 +98,8 @@ public class PetService {
                 .log("Looking for pet with id: [ %s ]".formatted(petId))
                 .onItem()
                 .transformToUni(_ ->
-                        Panache.withTransaction(treatment::persist).log("Saving treatment to pet with id: [ %s ]".formatted(petId))
+                        Panache.withTransaction(treatment::persist)
+                                .log("Saving treatment to pet with id: [ %s ]".formatted(petId))
                                 .onItem().castTo(Treatment.class)
                                 .onItem().transform(Treatment::toRecord))
                 .onItem()

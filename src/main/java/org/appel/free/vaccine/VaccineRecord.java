@@ -9,7 +9,7 @@ import static org.appel.free.shared.ErrorMessages.*;
 
 public record VaccineRecord(
         @Null(message = CONSTRAINT_NULL_MSG_ERROR)
-        long vaccineId,
+        Long vaccineId,
 
         @NotNull(message = CONSTRAINT_NOT_NULL_MSG_ERROR)
         UUID petId,
@@ -27,4 +27,15 @@ public record VaccineRecord(
         @Future
         LocalDate expirationDate
 ) {
+        @Override
+        public String toString() {
+                return "VaccineRecord{" +
+                        "vaccineId=" + vaccineId +
+                        ", petId=" + petId +
+                        ", vetId=" + vetId +
+                        ", type='" + type + '\'' +
+                        ", date=" + date +
+                        ", expirationDate=" + expirationDate +
+                        '}';
+        }
 }

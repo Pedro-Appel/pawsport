@@ -1,5 +1,6 @@
 package org.appel.free.vaccine;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -26,15 +27,15 @@ public class VaccineResource {
     @GET
     @Path("/{vaccineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> fetchVaccine(@PathParam("vaccineId") long id) {
-        return vaccineService.retrieve(id)
-                .onItem().transform(v -> Response.ok(v).build());
+    public Uni<Response> fetchVaccine(@PathParam("vaccineId") long vaccineId) {
+        Log.debugf("Fetching vaccine with id: [ %s ]",vaccineId);
+        return vaccineService.retrieve(vaccineId);
     }
 
     @DELETE
     @Path("/{vaccineId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> deleteVaccine(@PathParam("vaccineId") long id) {
+    public Uni<Response> deleteVaccine(@PathParam("vaccineId") Long id) {
         return vaccineService.delete(id);
     }
 }

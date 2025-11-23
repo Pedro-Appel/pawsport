@@ -34,7 +34,7 @@ public class Vaccine extends PanacheEntity {
         Parameters parameters = Parameters
                 .with("vaccineId", id)
                 .and("active", true);
-        return find("vaccineId = :vaccineId and active = :active", parameters).firstResult();
+        return find("id = :vaccineId and active = :active", parameters).firstResult();
     }
 
     public static Vaccine fromRecord(VaccineRecord vaccineRecord) {
