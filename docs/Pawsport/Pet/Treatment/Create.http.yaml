@@ -1,0 +1,12 @@
+method: post
+url: /api/v1/pets/{{petId}}/treatments
+requestBody:
+  type: application/json
+  data: |
+    {
+      "type": "HIV",
+      "startDate": "2025-11-01",
+      "endDate": "2030-11-20",
+      "vetId": "{{petId}}",
+      "petId": "{{petId}}"
+    }

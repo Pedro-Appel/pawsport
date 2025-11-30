@@ -1,0 +1,2 @@
+method: delete
+url: /api/v1/pets/{{petId}}/treatments/1

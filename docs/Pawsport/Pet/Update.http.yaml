@@ -1,0 +1,30 @@
+method: put
+url: /api/v1/pets/{{petId}}
+requestBody:
+  type: application/json
+  data: |-
+    {
+      "name": "Estrela",
+      "species": "Dog",
+      "breed": "West Kaboom",
+      "conditions": "Urine failure syndrome",
+      "birthdate": "2014-07-07",
+      "weight": 1.0,
+      "color": "white"
+    }
+postProcessors:
+  - type: assertion
+    data:
+      name: ""
+      subject: httpCode
+      comparison: equal
+      value: "202"
+      path: ""
+      multipleValue: []
+      extractSettings:
+        expression: ""
+        continueExtractorSettings:
+          isContinueExtractValue: false
+          JsonArrayValueIndexValue: ""
+    defaultEnable: true
+    enable: true

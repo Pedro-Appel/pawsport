@@ -1,0 +1,51 @@
+method: post
+url: /api/v1/pets
+requestBody:
+  type: application/json
+  data: |-
+    {
+      "name": "Estrela",
+      "species": "Dog",
+      "breed": "West Terrier",
+      "conditions": "Urine",
+      "birthdate": "2014-07-07",
+      "weight": 9.0,
+      "color": "white"
+    }
+postProcessors:
+  - type: assertion
+    data:
+      name: ""
+      subject: httpCode
+      comparison: equal
+      value: "201"
+      path: ""
+      multipleValue: []
+      extractSettings:
+        expression: ""
+        continueExtractorSettings:
+          isContinueExtractValue: false
+          JsonArrayValueIndexValue: ""
+    defaultEnable: true
+    enable: true
+  - type: extractor
+    data:
+      variableName: location
+      variableType: environment
+      subject: responseHeader
+      template: ""
+      expression: Location
+      extractSettings:
+        expression: Location
+        continueExtractorSettings:
+          isContinueExtractValue: false
+          JsonArrayValueIndexValue: ""
+    defaultEnable: true
+    enable: true
+  - type: customScript
+    data: |
+      let loc = pm.environment.get("location")
+      let id = loc.substring(loc.lastIndexOf("/")+1)
+      pm.environment.set("petId", id);
+    defaultEnable: true
+    enable: true

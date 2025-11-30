@@ -1,0 +1,18 @@
+method: delete
+url: /api/v1/vaccines/{{vaccineId}}
+postProcessors:
+  - type: assertion
+    data:
+      name: ""
+      subject: httpCode
+      comparison: equal
+      value: "204"
+      path: ""
+      multipleValue: []
+      extractSettings:
+        expression: ""
+        continueExtractorSettings:
+          isContinueExtractValue: false
+          JsonArrayValueIndexValue: ""
+    defaultEnable: true
+    enable: true

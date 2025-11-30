@@ -1,0 +1,2 @@
+method: get
+url: /api/v1/pets/{{petId}}/treatments/1

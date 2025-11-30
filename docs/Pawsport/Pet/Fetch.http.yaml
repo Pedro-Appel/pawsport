@@ -1,0 +1,18 @@
+method: get
+url: /api/v1/pets/{{petId}}
+postProcessors:
+  - type: assertion
+    data:
+      name: ""
+      subject: httpCode
+      comparison: equal
+      value: "200"
+      path: ""
+      multipleValue: []
+      extractSettings:
+        expression: ""
+        continueExtractorSettings:
+          isContinueExtractValue: false
+          JsonArrayValueIndexValue: ""
+    defaultEnable: true
+    enable: true

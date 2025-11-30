@@ -1,0 +1,10 @@
+method: get
+url: /api/v1/pets/{{petId}}/treatments
+parameters:
+  query:
+    - name: _limit
+      value: "2"
+      disabled: true
+    - name: _offset
+      value: "1"
+      disabled: true
