@@ -1,4 +1,4 @@
-package org.appel.free.shared.exception;
+package org.appel.free.pawsport.shared.exception;
 
 public record ExceptionResponse(String message) {
 }

@@ -1,4 +1,4 @@
-package org.appel.free.pet.treatment;
+package org.appel.free.pawsport.pet.treatment;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.panache.common.Page;

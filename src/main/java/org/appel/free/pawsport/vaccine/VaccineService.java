@@ -1,4 +1,4 @@
-package org.appel.free.vaccine;
+package org.appel.free.pawsport.vaccine;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;

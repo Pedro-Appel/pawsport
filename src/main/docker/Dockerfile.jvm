@@ -7,11 +7,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/pawsport-jvm .
+# docker build -f src/main/docker/Dockerfile.jvm -t quarkus-app .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/pawsport-jvm
+# docker run -i --rm --network quarkus-net --name quarkus-app -p 8080:8080 quarkus-app:latest
 #
 # If you want to include the debug port into your docker image
 # you will have to expose the debug port (default 5005 being the default) like this :  EXPOSE 8080 5005.
@@ -78,7 +78,7 @@
 #   accessed directly. (example: "foo.example.com,bar.example.com")
 #
 ###
-FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
+FROM registry.access.redhat.com/ubi9/openjdk-25-runtime
 
 ENV LANGUAGE='en_US:en'
 
@@ -91,8 +91,18 @@ COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
 USER 185
-ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+ENV JAVA_OPTS_APPEND="-Xmx700m -Xms10m -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.profile=staging "
+
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+
+# DATABASE CONFIG
+ENV FLYWAY_MIGRATE="true"
+ENV DB_URL="jdbc:postgresql://quarkus-postgres:5432/quarkus"
+ENV REACTIVE_DB_URL="vertx-reactive:postgresql://localhost:32769/quarkus"
+ENV DB_USER="quarkus"
+ENV DB_PASSWORD="quarkus"
+ENV DB_KINDc="postgresql"
 
 ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
 

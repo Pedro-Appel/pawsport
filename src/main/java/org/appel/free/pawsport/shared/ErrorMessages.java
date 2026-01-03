@@ -1,4 +1,4 @@
-package org.appel.free.shared;
+package org.appel.free.pawsport.shared;
 
 public class ErrorMessages {
 

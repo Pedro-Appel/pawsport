@@ -1,4 +1,4 @@
-package org.appel.free.pet;
+package org.appel.free.pawsport.pet;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.panache.common.Parameters;

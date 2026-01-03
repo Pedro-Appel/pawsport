@@ -1,4 +1,4 @@
-package org.appel.free.vaccine;
+package org.appel.free.pawsport.vaccine;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.panache.common.Parameters;

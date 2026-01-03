@@ -1,4 +1,4 @@
-package org.appel.free.pet;
+package org.appel.free.pawsport.pet;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.Valid;
@@ -7,12 +7,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.appel.free.pet.treatment.TreatmentRecord;
+import org.appel.free.pawsport.pet.treatment.TreatmentRecord;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import java.util.UUID;
 
-import static org.appel.free.shared.Constants.PETS_API_PATH;
+import static org.appel.free.pawsport.shared.Constants.PETS_API_PATH;
 
 @Path(PETS_API_PATH)
 public class PetResource {

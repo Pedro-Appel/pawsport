@@ -1,4 +1,4 @@
-package org.appel.free.pet;
+package org.appel.free.pawsport.pet;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
@@ -10,15 +10,15 @@ import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
-import org.appel.free.pet.treatment.Treatment;
-import org.appel.free.pet.treatment.TreatmentRecord;
-import org.appel.free.shared.exception.ExceptionResponse;
+import org.appel.free.pawsport.pet.treatment.Treatment;
+import org.appel.free.pawsport.pet.treatment.TreatmentRecord;
+import org.appel.free.pawsport.shared.exception.ExceptionResponse;
 
 import java.net.URI;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static org.appel.free.shared.Constants.PETS_API_PATH;
+import static org.appel.free.pawsport.shared.Constants.PETS_API_PATH;
 import static org.jboss.resteasy.reactive.RestResponse.StatusCode.*;
 
 @ApplicationScoped

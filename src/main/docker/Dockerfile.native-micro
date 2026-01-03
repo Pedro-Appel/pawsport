@@ -6,15 +6,15 @@
 #
 # Before building the container image run:
 #
-# ./gradlew build -Dquarkus.native.enabled=true
+# ./gradlew build -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-25.0.0_0
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/pawsport .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus-app-micro .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/pawsport
+# docker run -i --rm -p 8080:8080 --network quarkus-net quarkus-app-micro
 #
 # The `quay.io/quarkus/ubi9-quarkus-micro-image:2.0` base image is based on UBI 9.
 # To use UBI 8, switch to `quay.io/quarkus/quarkus-micro-image:2.0`.
@@ -28,5 +28,12 @@ COPY --chown=1001:root --chmod=0755 build/*-runner /work/application
 
 EXPOSE 8080
 USER 1001
+
+ENV FLYWAY_MIGRATE="true"
+ENV DB_URL="jdbc:postgresql://quarkus-postgres:5432/quarkus"
+ENV REACTIVE_DB_URL="vertx-reactive:postgresql://localhost:32769/quarkus?loggerLevel=OFF"
+ENV DB_USER="quarkus"
+ENV DB_PASSWORD="quarkus"
+ENV DB_KINDc="postgresql"
 
 ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

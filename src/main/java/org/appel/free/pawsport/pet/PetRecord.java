@@ -1,4 +1,4 @@
-package org.appel.free.pet;
+package org.appel.free.pawsport.pet;
 
 
 import jakarta.validation.constraints.*;
@@ -6,18 +6,18 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.appel.free.shared.ErrorMessages.*;
+import static org.appel.free.pawsport.shared.ErrorMessages.*;
 
 public record PetRecord(
 
         @Null(message = CONSTRAINT_NULL_MSG_ERROR)
         UUID uuid,
 
-        @Size(max = 36, message = CONSTRAINT_BIGGER_THAN_36_MSG_ERROR_CONDITION)
+        @Size(max = 255, message = CONSTRAINT_BIGGER_THAN_255_MSG_ERROR_CONDITION)
         @NotBlank(message = CONSTRAINT_NOT_NULL_MSG_ERROR)
         String name,
 
-        @Size(max = 36, message = CONSTRAINT_BIGGER_THAN_36_MSG_ERROR_CONDITION)
+        @Size(max = 255, message = CONSTRAINT_BIGGER_THAN_255_MSG_ERROR_CONDITION)
         @NotBlank(message = CONSTRAINT_NOT_NULL_MSG_ERROR)
         String species,
 

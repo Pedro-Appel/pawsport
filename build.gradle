@@ -20,9 +20,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest'
     implementation 'io.quarkus:quarkus-flyway'
     implementation 'io.quarkus:quarkus-hibernate-validator'
-//    implementation 'io.quarkus:quarkus-rest-jackson'
-//    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
-//    implementation 'io.quarkus:quarkus-hibernate-orm'
     implementation 'io.quarkus:quarkus-jdbc-postgresql'
 
     //REACTIVE
@@ -43,8 +40,8 @@ group = 'org.appel.free'
 version = '1.0.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 test {
